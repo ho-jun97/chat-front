@@ -1,24 +1,40 @@
-import logo from './logo.svg';
 import './App.css';
+import React, {useState} from 'react';
+import axios from 'axios';
 
 function App() {
+  const [email, setEmail] = useState('')
+  const [pw, setPw] = useState('')
+
+  const Login = async (e) => {
+    e.preventDefault()
+    const url = 'http://localhost:8080/login';
+    const body = {
+      id: email,
+      pw: pw
+    }
+    try{
+      const res = await axios.post(url, body);
+      alert(res.data);
+    }catch(e){
+      alert('error');
+    }
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <h1>Login</h1>
+      <form onSubmit={Login}>
+        <label>ID</label>
+        <input type="text" id="email" name="email" onChange={e =>setEmail(e.target.value)}/>
+        <br />
+        <label>PW</label>
+        <input type="password" id="pw" name="pw" onChange={e =>setPw(e.target.value)}/>
+        <br />
+        <button type="submit">Login</button>
+      </form>
+      </div>
+    
   );
 }
 
