@@ -12,9 +12,9 @@ const Home = () => {
             );
             const message = {
                 // 'roomId' : 1,
-                'sender': '로봇',
+                'sender': '호준',
                 'senderEmail': 'test@nate.com',
-                'message': '내이름은 뭘까?'
+                'message': '내이름은 호준'
             };
             connectMng.publish({ destination: '/pub/1', body: JSON.stringify(message) });
         // }

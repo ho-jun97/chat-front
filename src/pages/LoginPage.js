@@ -23,7 +23,7 @@ const LoginPage = () => {
             alert(res.data);
             connectMng.activate();
             
-            navigate("/");
+            navigate("/chatPage");
         } catch (e) {
             alert('error');
         }
