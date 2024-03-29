@@ -1,62 +1,81 @@
-import React, { useState, Component } from 'react';
-import Stomp from 'stompjs';
-import SockJS from 'sockjs-client';
+import { Client } from "@stomp/stompjs";
+import axios from 'axios'
+import React, { useState, useEffect } from 'react'
 import './ChatApp.css';
-import connectMng from '../utils/connectMng.js';
 
-
-
-const ChatApp = () => {
-    const [messages, setMessage] = useState([])
+const Chat = () => {
+    const [messages, setMessages] = useState([])
     const [newMessage, setNewMessage] = useState('')
+    const [sender, setSender] = useState('')
+    const [roomId, setRoomId] = useState('')
+    const [senderEmail, setSenderEmail] = useState('')
+    // const [stompClient, setStompClient] = useState();
+    const [stompClient, setStompClient] = useState(null);
 
+    useEffect(() => {
+        const initChat = async () => {
+            setRoomId('1')
+            const stomp = new Client({
+                brokerURL: 'ws://localhost:8080/ws',
 
-  const handleSubmit = (event) => {
-    // event.preventDefault();
-    // const { newMessage } = this.state;
-    // if (newMessage.trim() !== '') {
-    //   this.stompClient.send("/app/sendMessage", {}, JSON.stringify({ message: newMessage }));
-    //   this.setState({ newMessage: '' });
-    // }
-  }
+            });
+            setStompClient(stomp)
 
-  const sendMessage = (e) => {
-    e.preventDefault()
-    alert('Send message');
-    // connectMng.onConnect = () => {
+            stomp.activate()
 
-        connectMng.subscribe('/sub/room/1', message =>
-            console.log(`Received: ${message.body}`)
-        );
-        const message = {
-            // 'roomId' : 1,
-            'sender': '호준',
-            'senderEmail': 'test@nate.com',
-            'message': '내이름은 호준'
-        };
-        connectMng.publish({ destination: '/pub/1', body: JSON.stringify(message) });
-    // }
-}
+            stomp.onConnect = () => {
+                stomp.subscribe('/sub/room/1', message => {
+                    setMessages(prevMessage => [...prevMessage, JSON.parse(message.body)]);
+                });
+            }
+        }
 
-    
+        initChat()
+
+        return () => {
+            if (stompClient && stompClient.connected) {
+              stompClient.deactivate()
+            }
+          }
+    }, [roomId])
+    const sendMessage = (e) => {
+        e.preventDefault()
+
+        if (stompClient && stompClient.connected) {
+            const destination = '/pub/1';
+
+            setSender('호준')
+            setSenderEmail('test@nate.com')
+            stompClient.publish({
+                destination,
+                body: JSON.stringify({
+                    message: newMessage,
+                    senderEmail: senderEmail,
+                    sender: sender,
+                }),
+            })
+        }
+        setNewMessage('')
+    }
 
     return (
-      <div className="chat-app">
-        <div className="chat-window">
-          <div className="message-list">
-            {messages.map((message, index) => (
-              <div className="message" key={index}>
-                <span className="username">{message.username}:</span> {message.content}
-              </div>
-            ))}
-          </div>
-          <form onSubmit={handleSubmit} className="message-form">
-            <input type="text" value={newMessage} onChange={e => setNewMessage(e.target.value)} className="message-input" placeholder="Type your message..." />
-            <button type="submit" className="send-button" onClick={sendMessage} >Send</button>
-          </form>
+        <div className="chat-app">
+            <div className="chat-window">
+                <div className="message-list">
+                    {messages.map((message, index) => (
+                        <div className="message" key={index}>
+                            <span className="username">{message.sender}:</span> {message.message}
+                        </div>
+                    ))}
+                </div>
+                <form onSubmit={sendMessage} className="message-form">
+                    <input type="text" value={newMessage} onChange={e => setNewMessage(e.target.value)} className="message-input" placeholder="Type your message..." />
+                    <button type="submit" className="send-button" >Send</button>
+                </form>
+            </div>
         </div>
-      </div>
     );
 }
 
-export default ChatApp;
+
+export default Chat;

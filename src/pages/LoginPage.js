@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-import connectMng from '../utils/connectMng.js';
+
 
 
 const LoginPage = () => {
@@ -21,7 +21,7 @@ const LoginPage = () => {
         try {
             const res = await axios.post(url, body);
             alert(res.data);
-            connectMng.activate();
+            
             
             navigate("/chatPage");
         } catch (e) {

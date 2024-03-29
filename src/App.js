@@ -2,7 +2,7 @@ import './App.css';
 import { Route, Routes } from "react-router-dom";
 import Home from './pages/Home';
 import LoginPage from './pages/LoginPage';
-import ChatApp from './pages/ChatApp';
+import Chat from './pages/ChatApp';
 
 function App() {
   return (
@@ -10,7 +10,7 @@ function App() {
       <Routes>
         <Route path='/loginPage' Component={LoginPage} />
         <Route path='/' Component={Home} />
-        <Route path='/chatPage' Component={ChatApp}/>
+        <Route path='/chatPage' Component={Chat}/>
       </Routes>
     </div>
 
