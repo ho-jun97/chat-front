@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
-
-
 const LoginPage = () => {
-
     const [email, setEmail] = useState('')
     const [pw, setPw] = useState('')
     const navigate = useNavigate();
@@ -23,7 +20,7 @@ const LoginPage = () => {
             alert(res.data);
             
             
-            navigate("/chatPage");
+            navigate("/");
         } catch (e) {
             alert('error');
         }

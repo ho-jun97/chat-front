@@ -25,10 +25,14 @@
     padding: 5px 10px;
     margin-bottom: 10px;
     border-radius: 5px;
+    align-self: flex-end;
+    width: auto;
   }
   
   .username {
     font-weight: bold;
+    justify-content: left;
+    display: inline-block;
   }
   
   .message-form {
@@ -60,5 +64,7 @@
   .send-button:hover {
     background-color: #0056b3;
   }
+
+
 
   

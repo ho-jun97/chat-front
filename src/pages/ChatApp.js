@@ -1,6 +1,6 @@
 import { Client } from "@stomp/stompjs";
-import axios from 'axios'
-import React, { useState, useEffect } from 'react'
+// import axios from 'axios'
+import React, { useRef,useState, useEffect } from 'react'
 import './ChatApp.css';
 
 const Chat = () => {
@@ -9,22 +9,22 @@ const Chat = () => {
     const [sender, setSender] = useState('')
     const [roomId, setRoomId] = useState('')
     const [senderEmail, setSenderEmail] = useState('')
-    // const [stompClient, setStompClient] = useState();
-    const [stompClient, setStompClient] = useState(null);
+    const [isMatched, setIsMatched] = useState(false);
+    const stompClient = useRef(Client);
 
     useEffect(() => {
         const initChat = async () => {
-            setRoomId('1')
-            const stomp = new Client({
+            stompClient.current = new Client({
                 brokerURL: 'ws://localhost:8080/ws',
 
             });
-            setStompClient(stomp)
+            stompClient.current.activate()
 
-            stomp.activate()
-
-            stomp.onConnect = () => {
-                stomp.subscribe('/sub/room/1', message => {
+            stompClient.current.onConnect = () => {
+                console.log('연결되었습니다.');
+                stompClient.current.subscribe('/sub/room/1', message => {
+                    // setRoomId(1);
+                    setIsMatched(true);
                     setMessages(prevMessage => [...prevMessage, JSON.parse(message.body)]);
                 });
             }
@@ -32,26 +32,33 @@ const Chat = () => {
 
         initChat()
 
+        const disconnect = () =>{
+            console.log('종료되었습니다.');
+            stompClient.current.deactivate();
+            setIsMatched(false);
+        }
+        
         return () => {
-            if (stompClient && stompClient.connected) {
-              stompClient.deactivate()
+            if (stompClient.current && stompClient.current.connected) {
+              disconnect();
             }
           }
     }, [roomId])
-    const sendMessage = (e) => {
+    const sendMessage = (name, email,e) => {
         e.preventDefault()
+        
+        if (stompClient.current && stompClient.current.connected) {
+            console.log('메시지를 보냈습니다.');
+            setSender(name)
+            setSenderEmail(email)
 
-        if (stompClient && stompClient.connected) {
             const destination = '/pub/1';
-
-            setSender('호준')
-            setSenderEmail('test@nate.com')
-            stompClient.publish({
+            stompClient.current.publish({
                 destination,
                 body: JSON.stringify({
                     message: newMessage,
-                    senderEmail: senderEmail,
-                    sender: sender,
+                    senderEmail: email,
+                    sender: name,
                 }),
             })
         }
@@ -68,7 +75,7 @@ const Chat = () => {
                         </div>
                     ))}
                 </div>
-                <form onSubmit={sendMessage} className="message-form">
+                <form onSubmit={(e) => sendMessage('호준', 'hojun@naver.com',e)} className="message-form">
                     <input type="text" value={newMessage} onChange={e => setNewMessage(e.target.value)} className="message-input" placeholder="Type your message..." />
                     <button type="submit" className="send-button" >Send</button>
                 </form>
