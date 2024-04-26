@@ -18,20 +18,57 @@
     height: calc(100% - 80px);
     overflow-y: auto;
     padding: 10px;
+    display: flex;
+    flex-direction: column;
   }
   
-  .message {
-    background-color: #f0f0f0;
-    padding: 5px 10px;
+  .message-mine{
+    align-self: flex-end;
+    display: flex;
+    flex-direction: column;
+    width: auto;
+  }
+  .message-others{
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    width: auto;
+  }
+  .message-mine .message {
+    width: auto;
+    display: flex;
+    flex-direction: row-reverse;
+    
+  }
+  .message-others .message {
+    width: auto;
+    display: flex;
+    flex-direction: row;
+  }
+  .content {
     margin-bottom: 10px;
     border-radius: 5px;
+    padding: 5px 10px;
+  }
+
+
+  .message-mine .content {
+    background-color: greenyellow;
     align-self: flex-end;
-    width: auto;
+  }
+  .message-others .content {
+    align-self: flex-start;
+    background-color: #f0f0f0;
+  }
+  .message-others .time {
+    align-self: flex-end;
   }
   
   .username {
     font-weight: bold;
-    justify-content: left;
+    align-self: flex-start;
+    margin-bottom: 2px;
+    /* justify-content: left; */
     display: inline-block;
   }
   

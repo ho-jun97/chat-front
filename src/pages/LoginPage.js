@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
+import { useDispatch } from "react-redux";
+import { login } from '../store/reducers/user';
+
 const LoginPage = () => {
+    const dispatch = useDispatch();
     const [email, setEmail] = useState('')
     const [pw, setPw] = useState('')
     const navigate = useNavigate();
@@ -17,7 +21,13 @@ const LoginPage = () => {
         }
         try {
             const res = await axios.post(url, body);
-            alert(res.data);
+            const data = res.data;
+            dispatch(login({
+                isAuthorized: true,
+                userId: data.id,
+                username: data.email,
+                name: data.name
+            }))
             
             
             navigate("/");
