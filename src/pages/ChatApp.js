@@ -59,27 +59,79 @@ const Chat = () => {
     };
     const sendMessage = (e) => {
         e.preventDefault()
-        setEmail(userInfo.username);
-        setSender(userInfo.name);
+        // setEmail(userInfo.username);
+        // setSender(userInfo.name);
         if (newMessage.length === 0) {
             return;
         }
-            if (stompClient.current && stompClient.current.connected) {
-                console.log('메시지를 보냈습니다.');
+        if (stompClient.current && stompClient.current.connected) {
+            console.log('메시지를 보냈습니다.');
+            const offset = new Date().getTimezoneOffset() * 60000;
+            const today = new Date(Date.now() - offset);
+            const destination = '/pub/1';
+            stompClient.current.publish({
+                destination,
+                body: JSON.stringify({
+                    userId: userInfo.userId,
+                    message: newMessage,
+                    senderEmail: userInfo.username,
+                    sender: userInfo.name,
+                    time: today
+                }),
+            })
 
-                const destination = '/pub/1';
-                stompClient.current.publish({
-                    destination,
-                    body: JSON.stringify({
-                        userId: userInfo.userId,
-                        message: newMessage,
-                        senderEmail: userInfo.username,
-                        sender: userInfo.name,
-                        time: new Date()
-                    }),
-                })
-            }
-            setNewMessage('')
+        }
+        setNewMessage('')
+    }
+    function calEqualTime(prev, cur){
+        const prevTime = new Date(prev);
+        const curTime = new Date(cur);
+
+        return prevTime.getFullYear() === curTime.getFullYear() &&
+        prevTime.getHours() === curTime.getHours() &&
+        prevTime.getMinutes() === curTime.getMinutes()
+    }
+    function renderMessage(message, index){
+        const previousTime = index > 0 ? messages[index - 1].time : null;
+        const currentTime = message.time;
+
+        const sameUsername = index > 0 && message.userId === messages[index - 1].userId;
+        const isEqualTime = calEqualTime(previousTime,currentTime);
+
+        // 같은 아이디이면서 같은 시간이면 제일 마지막에 시간
+        return (
+        message.userId === userInfo.userId ? (
+            <div className="message-mine" key={index}>
+                <div className="message">
+                    <div className="content">
+                        {message.message}
+                    </div>
+                    {sameUsername && (!isEqualTime &&( 
+                    
+                    <div className="time">
+                        {new Date(message.time).toLocaleTimeString([], { hour12: true, hour: 'numeric', minute: '2-digit' })}
+                    </div>
+                    ))}
+                </div>
+            </div>
+        ) :
+            <div className="message-others" key={index}>
+                {!sameUsername || (!isEqualTime && (
+                    <span className="username">{message.sender}</span>
+                ))}
+                <div className="message">
+                    <div className="content">
+                        {message.message}
+                    </div>
+                    {sameUsername && ( 
+                    
+                    <div className="time">
+                        {new Date(message.time).toLocaleTimeString([], { hour12: true, hour: 'numeric', minute: '2-digit' })}
+                    </div>
+                    )}
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -87,35 +139,7 @@ const Chat = () => {
             <div className="chat-window">
                 <div ref={messageListRef} className="message-list">
                     {messages.map((message, index) => (
-                        message.userId === userInfo.userId ? (
-                            <div className="message-mine" key={index}>
-                                {/* <span className="username">{message.sender}</span> */}
-
-                                <div class="message">
-                                    <div className="content">
-                                        {message.message}
-                                    </div>
-                                    <div className="time">
-                                        {new Date(message.time).toLocaleTimeString([], { hour12: true, hour: 'numeric', minute: '2-digit' })}
-                                    </div>
-                                </div>
-                            </div>
-                        ) :
-                            <div className="message-others" key={index}>
-                                {index > 0 && message.userId !== messages[index - 1].userId && 
-                                    new Date(message.time).getMinutes() === new Date(messages[index - 1].time).getMinutes() && (
-                                    <span className="username">{sender}</span>
-                                )}
-                                <div class="message">
-                                    <div className="content">
-                                        {message.message}
-                                    </div>
-                                    <div className="time">
-                                        {new Date(message.time).toLocaleTimeString([], { hour12: true, hour: 'numeric', minute: '2-digit' })}
-                                    </div>
-                                </div>
-
-                            </div>
+                        renderMessage(message, index)
                     ))}
                 </div>
                 <form onSubmit={sendMessage} className="message-form">

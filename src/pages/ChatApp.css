@@ -8,7 +8,8 @@
   .chat-window {
     width: 400px;
     height: 500px;
-    background-color: cornflowerblue;
+    /* background-color: cornflowerblue; */
+    background-color: #fff7f2;
     border: 1px solid #ccc;
     border-radius: 5px;
     overflow: hidden;
@@ -47,14 +48,16 @@
   }
   .content {
     margin-bottom: 10px;
-    border-radius: 5px;
-    padding: 5px 10px;
+    border-radius: 15px;
+    padding: 5px 12px;
+    font-family: '맑은 고딕';
   }
 
 
   .message-mine .content {
-    background-color: greenyellow;
+    background-color: #FFD566;
     align-self: flex-end;
+    
   }
   .message-others .content {
     align-self: flex-start;
@@ -62,6 +65,14 @@
   }
   .message-others .time {
     align-self: flex-end;
+    margin-bottom: 10px;
+    font-size: 10px;
+  }
+  .message-mine .time {
+    align-self: flex-end;
+    margin-bottom: 10px;
+    font-size: 10px;
+    
   }
   
   .username {
@@ -84,22 +95,22 @@
     flex: 1;
     padding: 8px;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 15px;
     margin-right: 10px;
     height: auto;
   }
   
   .send-button {
     padding: 8px 15px;
-    background-color: #007bff;
-    color: #fff;
+    background-color: #FFD566;
+    color: black;
     border: none;
-    border-radius: 5px;
+    border-radius: 15px;
     cursor: pointer;
   }
   
   .send-button:hover {
-    background-color: #0056b3;
+    background-color: #FFA500;;
   }
 
 
