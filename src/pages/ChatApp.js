@@ -1,6 +1,7 @@
 import { Client } from "@stomp/stompjs";
 import axios from 'axios';
 import React, { useRef, useState, useEffect } from 'react';
+import { useParams } from "react-router-dom";
 import { useSelector } from 'react-redux';
 import './ChatApp.css';
 
@@ -8,13 +9,9 @@ const Chat = () => {
     const userInfo = useSelector(state => state.user).user.value;
     const [messages, setMessages] = useState([])
     const [newMessage, setNewMessage] = useState('')
-    const [roomId, setRoomId] = useState('')
-    const [isMatched, setIsMatched] = useState(false);
-    const [sender, setSender] = useState('');
-    const [email, setEmail] = useState('');
     const messageListRef = useRef(null);
     const stompClient = useRef(Client);
-    const [firstMsg, setFirstMsg] = useState(true);
+    const {roomId} = useParams();
 
     useEffect(() => {
         const initChat = async () => {
@@ -23,17 +20,17 @@ const Chat = () => {
             });
 
             stompClient.current.onConnect = () => {
-                console.log('연결되었습니다.');
-                stompClient.current.subscribe('/sub/room/1', message => {
-                    // setRoomId(1);
-                    setIsMatched(true);
+                console.log(roomId + '번 방에 연결되었습니다.');
+                stompClient.current.subscribe(`/sub/room/${roomId}`, message => {
+                    
+                    // setIsMatched(true);
                     setMessages(prevMessage => [...prevMessage, JSON.parse(message.body)]);
                 });
 
                 
                 const msg = async () => { 
                     try{
-                        const res = await axios.get("http://localhost:8080/getMessages/"+1);
+                        const res = await axios.get(`http://localhost:8080/getMessages/${roomId}`);
                         setMessages(res.data);
                     } catch(error) {
                         console.log('Eeror response Data : ' , error)
@@ -42,15 +39,16 @@ const Chat = () => {
                 msg();
             };
 
-            stompClient.current.activate()
+            stompClient.current.activate();
         }
-
+        
+        
         initChat()
-
+        
         const disconnect = () => {
-            console.log('종료되었습니다.');
+            console.log(roomId + '번 방이 종료되었습니다.');
             stompClient.current.deactivate();
-            setIsMatched(false);
+            // setIsMatched(false);
         }
 
         return () => {
@@ -79,7 +77,7 @@ const Chat = () => {
             console.log('메시지를 보냈습니다.');
             const offset = new Date().getTimezoneOffset() * 60000;
             const today = new Date(Date.now() - offset);
-            const destination = '/pub/1';
+            const destination = `/pub/${roomId}`;
             stompClient.current.publish({
                 destination,
                 body: JSON.stringify({

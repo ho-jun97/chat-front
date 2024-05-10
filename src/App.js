@@ -10,7 +10,7 @@ function App() {
       <Routes>
         <Route path='/loginPage' Component={LoginPage} />
         <Route path='/' Component={Home} />
-        <Route path='/chatPage' Component={Chat}/>
+        <Route path='/chatPage/:roomId' Component={Chat}/>
       </Routes>
     </div>
 
