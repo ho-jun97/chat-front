@@ -1,5 +1,5 @@
 import { Client } from "@stomp/stompjs";
-// import axios from 'axios';
+import axios from 'axios';
 import React, { useRef, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import './ChatApp.css';
@@ -21,16 +21,28 @@ const Chat = () => {
             stompClient.current = new Client({
                 brokerURL: 'ws://localhost:8080/ws',
             });
-            stompClient.current.activate()
 
             stompClient.current.onConnect = () => {
                 console.log('연결되었습니다.');
                 stompClient.current.subscribe('/sub/room/1', message => {
-                    setRoomId(1);
+                    // setRoomId(1);
                     setIsMatched(true);
                     setMessages(prevMessage => [...prevMessage, JSON.parse(message.body)]);
                 });
-            }
+
+                
+                const msg = async () => { 
+                    try{
+                        const res = await axios.get("http://localhost:8080/getMessages/"+1);
+                        setMessages(res.data);
+                    } catch(error) {
+                        console.log('Eeror response Data : ' , error)
+                    }
+                };
+                msg();
+            };
+
+            stompClient.current.activate()
         }
 
         initChat()
@@ -59,8 +71,7 @@ const Chat = () => {
     };
     const sendMessage = (e) => {
         e.preventDefault()
-        // setEmail(userInfo.username);
-        // setSender(userInfo.name);
+
         if (newMessage.length === 0) {
             return;
         }
@@ -72,6 +83,7 @@ const Chat = () => {
             stompClient.current.publish({
                 destination,
                 body: JSON.stringify({
+                    roomId: roomId,
                     userId: userInfo.userId,
                     message: newMessage,
                     senderEmail: userInfo.username,
@@ -92,6 +104,7 @@ const Chat = () => {
         prevTime.getMinutes() === curTime.getMinutes()
     }
     function renderMessage(message, index){
+        // console.log(message);
         const previousTime = index > 0 ? messages[index - 1].time : null;
         const currentTime = message.time;
 
