@@ -6,12 +6,11 @@
   }
   
   .chat-window {
-    width: 400px;
+    width: 600px;
     height: 500px;
     /* background-color: cornflowerblue; */
     background-color: #fff7f2;
     border: 1px solid #ccc;
-    border-radius: 5px;
     overflow: hidden;
   }
   
@@ -112,6 +111,22 @@
   .send-button:hover {
     background-color: #FFA500;;
   }
+
+  .chatRoom-list {
+    background-color: aqua;
+    border: 1px solid #ccc;
+    border-radius: 10px 0 0 10px;
+    width: 150px;
+    height: 500px;
+}
+
+.friends-list {
+    background-color: chartreuse;
+    border: 1px solid #ccc;
+    border-radius: 0 10px 10px 0;
+    width: 150px;
+    height: 500px;
+}
 
 
 

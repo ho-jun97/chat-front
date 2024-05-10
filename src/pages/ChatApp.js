@@ -12,12 +12,15 @@ const Chat = () => {
     const messageListRef = useRef(null);
     const stompClient = useRef(Client);
     const {roomId} = useParams();
+    const [showChatRoomList, setShowChatRoomList] = useState(false);
 
     useEffect(() => {
         const initChat = async () => {
             stompClient.current = new Client({
                 brokerURL: 'ws://localhost:8080/ws',
             });
+
+            stompClient.current.activate();
 
             stompClient.current.onConnect = () => {
                 console.log(roomId + '번 방에 연결되었습니다.');
@@ -39,7 +42,6 @@ const Chat = () => {
                 msg();
             };
 
-            stompClient.current.activate();
         }
         
         
@@ -144,9 +146,14 @@ const Chat = () => {
             </div>
         );
     }
+    const toggleChatRoomList = () => {
+        console.log('안녕')
+        setShowChatRoomList(!showChatRoomList);
+    };
 
     return (
         <div className="chat-app">
+                <div className="chatRoom-list"></div>
             <div className="chat-window">
                 <div ref={messageListRef} className="message-list">
                     {messages.map((message, index) => (
@@ -157,6 +164,9 @@ const Chat = () => {
                     <input type="text" value={newMessage} onChange={e => setNewMessage(e.target.value)} className="message-input" placeholder="Type your message..." />
                     <button type="submit" className="send-button" >Send</button>
                 </form>
+            </div>
+            <div className="friends-list">
+                
             </div>
         </div>
     );
